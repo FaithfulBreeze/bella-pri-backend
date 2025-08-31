@@ -24,5 +24,6 @@ export class Product {
   assets: Asset[];
 
   @ManyToMany(() => Category, category => category.products, { nullable: true })
+  @JoinTable()
   categories: Category[]
 }
