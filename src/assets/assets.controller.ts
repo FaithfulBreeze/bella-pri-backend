@@ -7,15 +7,18 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('assets')
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   create(@Body() createAssetDto: CreateAssetDto) {
     return this.assetsService.create(createAssetDto);
@@ -40,11 +43,13 @@ export class AssetsController {
     return this.assetsService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAssetDto: UpdateAssetDto) {
     return this.assetsService.update(+id, updateAssetDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.assetsService.remove(+id);
