@@ -25,13 +25,24 @@ export class ProductsController {
   }
 
   @Get()
-  findAll(@Query('take') take: number = 20, @Query('skip') skip: number = 0) {
-    return this.productsService.findAll(take, skip);
+  findAll(
+    @Query('take') take: number = 20,
+    @Query('skip') skip: number = 0,
+    @Query('categoryIds') categoryIds?: number[],
+    @Query('orderByPrice') orderByPrice: 'ASC' | 'DESC' = 'ASC',
+  ) {
+    return this.productsService.findAll(+take, +skip, categoryIds, orderByPrice);
   }
 
   @Get('/search')
-  findOneByName(@Query('name') name: string, @Query('take') take: number = 20, @Query('skip') skip: number = 0) {
-    return this.productsService.findOneByName(name, take, skip);
+  findOneByName(
+    @Query('name') name: string,
+    @Query('take') take: number = 20,
+    @Query('skip') skip: number = 0,
+    @Query('categoryIds') categoryIds?: number[],
+    @Query('orderByPrice') orderByPrice: 'ASC' | 'DESC' = 'ASC',
+  ) {
+    return this.productsService.findOneByName(name, +take, +skip, categoryIds, orderByPrice);
   }
 
   @Get(':id')
