@@ -57,6 +57,10 @@ export class ProductsService {
     const [products, count] = await this.productRepository.findAndCount({
       skip: skip,
       take: take,
+      relations: {
+        assets: true,
+        categories: true
+      }
     });
 
     return {
@@ -72,6 +76,7 @@ export class ProductsService {
       },
       relations: {
         assets: true,
+        categories: true
       },
     });
 
@@ -84,7 +89,11 @@ export class ProductsService {
     const [products, count] = await this.productRepository.findAndCount({
       where: { name: Like(`%${name}%`) },
       take,
-      skip
+      skip,
+      relations: {
+        assets: true,
+        categories: true
+      }
     });
 
     return {
