@@ -13,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forRoot({
       type: 'postgres',
       autoLoadEntities: true,
-      url: process.env.POSTGRES_URL,
+      url: process.env.POSTGRES_DATABASE_URL,
       entities: [`${process.cwd()}/**/*.entity.js`],
       ssl: { rejectUnauthorized: false },
     }),
