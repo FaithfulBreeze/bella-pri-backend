@@ -19,7 +19,7 @@ export class Product {
   @Column({ nullable: true })
   link?: string;
 
-  @ManyToMany(() => Asset, asset => asset.product, { nullable: true })
+  @ManyToMany(() => Asset, asset => asset.products, { nullable: true })
   @JoinTable()
   assets: Asset[];
 
