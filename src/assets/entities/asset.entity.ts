@@ -20,5 +20,5 @@ export class Asset {
 
   @ManyToMany(() => Product, product => product.assets)
   @JoinTable()
-  product: Product;
+  products: Product[];
 }

@@ -48,7 +48,7 @@ export class AssetsService {
         id,
       },
       relations: {
-        product: true,
+        products: true,
       },
     });
 
