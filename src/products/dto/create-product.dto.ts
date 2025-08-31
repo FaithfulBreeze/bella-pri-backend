@@ -1,4 +1,13 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { 
+  IsArray, 
+  IsInt, 
+  IsNotEmpty, 
+  IsNumber, 
+  IsOptional, 
+  IsPositive, 
+  IsString, 
+  ArrayUnique 
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -6,16 +15,26 @@ export class CreateProductDto {
   name: string;
 
   @IsNumber()
+  @IsPositive()
   price: number;
 
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   quantity: number;
 
   @IsString()
   @IsOptional()
-  link: string;
+  link?: string;
 
-  @IsNumber()
+  @IsArray()
+  @ArrayUnique()
+  @IsInt({ each: true })
   @IsOptional()
-  assetId?: number;
+  assetIds?: number[];
+
+  @IsArray()
+  @ArrayUnique()
+  @IsInt({ each: true })
+  @IsOptional()
+  categoryIds?: number[];
 }
