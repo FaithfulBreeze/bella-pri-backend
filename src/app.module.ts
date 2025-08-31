@@ -3,8 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
-import { join } from 'path';
 import { AssetsModule } from './assets/assets.module';
+import { CategoriesModule } from './categories/categories.module';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AssetsModule } from './assets/assets.module';
     }),
     ProductsModule,
     AssetsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
