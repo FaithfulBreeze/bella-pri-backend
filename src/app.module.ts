@@ -7,15 +7,15 @@ import { AssetsModule } from './assets/assets.module';
 import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { join } from 'path';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      synchronize: true,
+      type: 'postgres',
       autoLoadEntities: true,
-      database: join(process.cwd(), 'database.sqlite'),
+      url: process.env.POSTGRES_URL,
+      entities: [`${process.cwd()}/**/*.entity.js`],
+      ssl: { rejectUnauthorized: false },
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     ProductsModule,
