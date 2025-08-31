@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ forbidNonWhitelisted: true, whitelist: true }),
   );
-  app.use(helmet);
+  app.use(helmet());
   app.enableCors({
     origin: process.env.CORS_WHITELIST?.split(','),
     credentials: true,
