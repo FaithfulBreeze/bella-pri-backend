@@ -6,9 +6,10 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository} from 'typeorm';
+import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { AssetsService } from '../assets/assets.service';
+import { CategoriesService } from '../categories/categories.service';
 
 @Injectable()
 export class ProductsService {
@@ -16,23 +17,8 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly assetsService: AssetsService,
+    private readonly categoriesService: CategoriesService,
   ) {}
-
-
-  private async addAssetsToProduct(productId: number, assetIds: number[]) {
-    const product = await this.productRepository.findOne({
-      where: { id: productId },
-      relations: { assets: true },
-    });
-    if (!product) throw new NotFoundException('Produto não encontrado');
-
-    const assets = await Promise.all(
-      assetIds.map(id => this.assetsService.findOne(id)),
-    );
-
-    product.assets.push(...assets);
-    return this.productRepository.save(product);
-  }
 
   private buildQuery(
     name?: string,
@@ -45,7 +31,7 @@ export class ProductsService {
       .leftJoinAndSelect('product.categories', 'categories');
 
     if (name) {
-      query.where('product.name LIKE :name', { name: `%${name.toLowerCase()}%` });
+      query.where('LOWER(product.name) LIKE :name', { name: `%${name.toLowerCase()}%` });
     }
 
     if (categoryIds && categoryIds.length > 0) {
@@ -57,8 +43,7 @@ export class ProductsService {
     return query;
   }
 
-
-  async create({ assetIds = [], ...createProductDto }: CreateProductDto) {
+  async create({ assetIds = [], categoryIds = [], ...createProductDto }: CreateProductDto) {
     const existing = await this.productRepository.findOne({
       where: { name: createProductDto.name },
     });
@@ -67,8 +52,15 @@ export class ProductsService {
     const product = this.productRepository.create(createProductDto);
 
     if (assetIds.length > 0) {
-      const assets = await Promise.all(assetIds.map(id => this.assetsService.findOne(id)));
+      const uniqueIds = [...new Set(assetIds)];
+      const assets = await Promise.all(uniqueIds.map(id => this.assetsService.findOne(id)));
       product.assets = assets;
+    }
+
+    if (categoryIds.length > 0) {
+      const uniqueIds = [...new Set(categoryIds)];
+      const categories = await Promise.all(uniqueIds.map(id => this.categoriesService.findOne(id)));
+      product.categories = categories;
     }
 
     return this.productRepository.save(product);
@@ -115,16 +107,32 @@ export class ProductsService {
       const existing = await this.productRepository.findOne({
         where: { name: updateProductDto.name },
       });
-      if (existing && existing.id !== id)
+      if (existing && existing.id !== id) {
         throw new ConflictException('Você já possui um item com esse nome.');
+      }
     }
 
-    if (updateProductDto.assetIds && updateProductDto.assetIds.length > 0) {
-      return this.addAssetsToProduct(id, updateProductDto.assetIds);
+    const product = await this.productRepository.findOne({
+      where: { id },
+      relations: { assets: true, categories: true },
+    });
+    if (!product) throw new NotFoundException('Produto não encontrado');
+
+    if (updateProductDto.assetIds) {
+      const uniqueIds = [...new Set(updateProductDto.assetIds)];
+      const assets = await Promise.all(uniqueIds.map(id => this.assetsService.findOne(id)));
+      product.assets = assets;
     }
 
-    await this.productRepository.update(id, updateProductDto);
-    return this.findOne(id);
+    if (updateProductDto.categoryIds) {
+      const uniqueIds = [...new Set(updateProductDto.categoryIds)];
+      const categories = await Promise.all(uniqueIds.map(id => this.categoriesService.findOne(id)));
+      product.categories = categories;
+    }
+
+    Object.assign(product, updateProductDto);
+
+    return this.productRepository.save(product);
   }
 
   async remove(id: number) {
