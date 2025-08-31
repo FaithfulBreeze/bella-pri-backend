@@ -35,7 +35,7 @@ export class AssetsController {
     @Query('take') take: number = 20,
     @Query('skip') skip: number = 0,
   ) {
-    return this.assetsService.findOneByName(name, take, skip);
+    return this.assetsService.findOneByName(name, +take, +skip);
   }
 
   @Get(':id')
