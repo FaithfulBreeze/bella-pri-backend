@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -29,19 +30,20 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(+id);
-  }
-
-  @Get('/search')
+  @Get('search/:name')
   findOneByName(
-    @Query('name') name: string,
+    @Param('name') name: string = '',
     @Query('take') take: number = 20,
     @Query('skip') skip: number = 0,
   ) {
     return this.categoriesService.findOneByName(name, +take, +skip);
   }
+
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: string) {
+    return this.categoriesService.findOne(+id);
+  }
+
 
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')

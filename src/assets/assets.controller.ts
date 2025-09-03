@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
@@ -29,9 +30,9 @@ export class AssetsController {
     return this.assetsService.findAll();
   }
 
-  @Get('/search')
+  @Get('search/:name')
   findOneByName(
-    @Query('name') name: string,
+    @Param('name') name: string = '',
     @Query('take') take: number = 20,
     @Query('skip') skip: number = 0,
   ) {
@@ -39,7 +40,7 @@ export class AssetsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.assetsService.findOne(+id);
   }
 

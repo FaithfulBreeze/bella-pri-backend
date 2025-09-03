@@ -19,6 +19,9 @@ export class Product {
   @Column({ nullable: true })
   link?: string;
 
+  @Column({ default: false })
+  highlighted: boolean
+
   @ManyToMany(() => Asset, asset => asset.products, { nullable: true })
   @JoinTable()
   assets: Asset[];

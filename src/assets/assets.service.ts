@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Asset } from './entities/asset.entity';
-import { Like, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 
@@ -59,7 +59,7 @@ export class AssetsService {
 
   async findOneByName(name: string, take?: number, skip?: number) {
     const [assets, count] = await this.assetsRepository.findAndCount({
-      where: { name: Like(`%${name}%`) },
+      where: { name: ILike(`%${name}%`) },
       take,
       skip,
     });

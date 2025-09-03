@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -34,9 +35,17 @@ export class ProductsController {
     return this.productsService.findAll(+take, +skip, categoryIds, orderByPrice);
   }
 
-  @Get('/search')
+  @Get('/highlighted')
+  findAllHighlighted(
+    @Query('take') take: number = 20,
+    @Query('skip') skip: number = 0,
+  ) {
+    return this.productsService.findAllHighlighted(+take, +skip);
+  }
+
+  @Get('search/:name')
   findOneByName(
-    @Query('name') name: string,
+    @Param('name') name: string = '',
     @Query('take') take: number = 20,
     @Query('skip') skip: number = 0,
     @Query('categoryIds') categoryIds?: number[],
@@ -46,7 +55,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.productsService.findOne(+id);
   }
 
