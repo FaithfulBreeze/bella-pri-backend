@@ -6,7 +6,8 @@ import {
   IsOptional, 
   IsPositive, 
   IsString, 
-  ArrayUnique 
+  ArrayUnique, 
+  IsBoolean
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -25,6 +26,10 @@ export class CreateProductDto {
   @IsString()
   @IsOptional()
   link?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  highlighted: boolean;
 
   @IsArray()
   @ArrayUnique()

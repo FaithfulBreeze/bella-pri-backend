@@ -3,7 +3,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
-import { Like, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriesService {
@@ -49,7 +49,7 @@ export class CategoriesService {
   
     async findOneByName(label: string, take?: number, skip?: number) {
       const [categories, count] = await this.categoriesRepository.findAndCount({
-        where: { label: Like(`%${label}%`) },
+        where: { label: ILike(`%${label}%`) },
         take,
         skip
       });

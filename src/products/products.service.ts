@@ -20,22 +20,34 @@ export class ProductsService {
     private readonly categoriesService: CategoriesService,
   ) {}
 
-  private buildQuery(
-    name?: string,
-    categoryIds?: number[],
-    orderByPrice: 'ASC' | 'DESC' = 'ASC',
-  ) {
+  private buildQuery({
+    name,
+    categoryIds,
+    orderByPrice = 'ASC',
+    highlighted
+  }: {
+    name?: string;
+    categoryIds?: number[];
+    orderByPrice?: 'ASC' | 'DESC';
+    highlighted?: boolean
+  }) {
     const query = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.assets', 'assets')
       .leftJoinAndSelect('product.categories', 'categories');
 
     if (name) {
-      query.where('LOWER(product.name) LIKE :name', { name: `%${name.toLowerCase()}%` });
+      query.where('LOWER(product.name) ILIKE :name', {
+        name: `%${name.toLowerCase()}%`,
+      });
     }
 
     if (categoryIds && categoryIds.length > 0) {
       query.andWhere('categories.id IN (:...categoryIds)', { categoryIds });
+    }
+
+    if(highlighted) {
+      query.andWhere('highlighted = true')
     }
 
     query.orderBy('product.price', orderByPrice);
@@ -43,23 +55,32 @@ export class ProductsService {
     return query;
   }
 
-  async create({ assetIds = [], categoryIds = [], ...createProductDto }: CreateProductDto) {
+  async create({
+    assetIds = [],
+    categoryIds = [],
+    ...createProductDto
+  }: CreateProductDto) {
     const existing = await this.productRepository.findOne({
       where: { name: createProductDto.name },
     });
-    if (existing) throw new ConflictException('Você já possui um item com esse nome.');
+    if (existing)
+      throw new ConflictException('Você já possui um item com esse nome.');
 
     const product = this.productRepository.create(createProductDto);
 
     if (assetIds.length > 0) {
       const uniqueIds = [...new Set(assetIds)];
-      const assets = await Promise.all(uniqueIds.map(id => this.assetsService.findOne(id)));
+      const assets = await Promise.all(
+        uniqueIds.map((id) => this.assetsService.findOne(id)),
+      );
       product.assets = assets;
     }
 
     if (categoryIds.length > 0) {
       const uniqueIds = [...new Set(categoryIds)];
-      const categories = await Promise.all(uniqueIds.map(id => this.categoriesService.findOne(id)));
+      const categories = await Promise.all(
+        uniqueIds.map((id) => this.categoriesService.findOne(id)),
+      );
       product.categories = categories;
     }
 
@@ -72,7 +93,15 @@ export class ProductsService {
     categoryIds?: number[],
     orderByPrice: 'ASC' | 'DESC' = 'ASC',
   ) {
-    const query = this.buildQuery(undefined, categoryIds, orderByPrice);
+    const query = this.buildQuery({ categoryIds, orderByPrice });
+    query.take(take).skip(skip);
+
+    const [products, count] = await query.getManyAndCount();
+    return { products, count };
+  }
+
+  async findAllHighlighted(take?: number, skip?: number) {
+    const query = this.buildQuery({ highlighted: true });
     query.take(take).skip(skip);
 
     const [products, count] = await query.getManyAndCount();
@@ -95,7 +124,7 @@ export class ProductsService {
     categoryIds?: number[],
     orderByPrice: 'ASC' | 'DESC' = 'ASC',
   ) {
-    const query = this.buildQuery(name, categoryIds, orderByPrice);
+    const query = this.buildQuery({name, categoryIds, orderByPrice});
     query.take(take).skip(skip);
 
     const [products, count] = await query.getManyAndCount();
@@ -120,13 +149,17 @@ export class ProductsService {
 
     if (updateProductDto.assetIds) {
       const uniqueIds = [...new Set(updateProductDto.assetIds)];
-      const assets = await Promise.all(uniqueIds.map(id => this.assetsService.findOne(id)));
+      const assets = await Promise.all(
+        uniqueIds.map((id) => this.assetsService.findOne(id)),
+      );
       product.assets = assets;
     }
 
     if (updateProductDto.categoryIds) {
       const uniqueIds = [...new Set(updateProductDto.categoryIds)];
-      const categories = await Promise.all(uniqueIds.map(id => this.categoriesService.findOne(id)));
+      const categories = await Promise.all(
+        uniqueIds.map((id) => this.categoriesService.findOne(id)),
+      );
       product.categories = categories;
     }
 
