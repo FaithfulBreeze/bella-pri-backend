@@ -35,7 +35,8 @@ export class ProductsService {
     const query = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.assets', 'assets')
-      .leftJoinAndSelect('product.categories', 'categories');
+      .leftJoinAndSelect('product.categories', 'categories')
+      .leftJoinAndSelect('product.mainAsset', 'mainAsset')
 
     if (name) {
       query.where('LOWER(product.name) ILIKE :name', {
