@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -24,12 +25,12 @@ export class ProductsService {
     name,
     categoryIds,
     orderByPrice = 'ASC',
-    highlighted
+    highlighted,
   }: {
     name?: string;
     categoryIds?: number[];
     orderByPrice?: 'ASC' | 'DESC';
-    highlighted?: boolean
+    highlighted?: boolean;
   }) {
     const query = this.productRepository
       .createQueryBuilder('product')
@@ -46,8 +47,8 @@ export class ProductsService {
       query.andWhere('categories.id IN (:...categoryIds)', { categoryIds });
     }
 
-    if(highlighted) {
-      query.andWhere('highlighted = true')
+    if (highlighted) {
+      query.andWhere('highlighted = true');
     }
 
     query.orderBy('product.price', orderByPrice);
@@ -60,6 +61,14 @@ export class ProductsService {
     categoryIds = [],
     ...createProductDto
   }: CreateProductDto) {
+    if (
+      createProductDto.mainAssetId &&
+      !assetIds.includes(createProductDto.mainAssetId)
+    )
+      throw new BadRequestException(
+        'Se você deseja definir a imagem principal, ela precisa também estar inclusa na lista de imagens',
+      );
+
     const existing = await this.productRepository.findOne({
       where: { name: createProductDto.name },
     });
@@ -124,7 +133,7 @@ export class ProductsService {
     categoryIds?: number[],
     orderByPrice: 'ASC' | 'DESC' = 'ASC',
   ) {
-    const query = this.buildQuery({name, categoryIds, orderByPrice});
+    const query = this.buildQuery({ name, categoryIds, orderByPrice });
     query.take(take).skip(skip);
 
     const [products, count] = await query.getManyAndCount();
@@ -136,6 +145,17 @@ export class ProductsService {
       const existing = await this.productRepository.findOne({
         where: { name: updateProductDto.name },
       });
+
+      if (
+        updateProductDto.mainAssetId &&
+        !existing?.assets.find(
+          (asset) => asset.id === updateProductDto.mainAssetId,
+        )
+      )
+        throw new BadRequestException(
+          'Se você deseja definir a imagem principal, ela precisa também estar inclusa na lista de imagens',
+        );
+
       if (existing && existing.id !== id) {
         throw new ConflictException('Você já possui um item com esse nome.');
       }

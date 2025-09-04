@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Asset } from '../../assets/entities/asset.entity';
 import { Category } from '../../categories/entities/category.entity';
 
@@ -21,6 +21,10 @@ export class Product {
 
   @Column({ default: false })
   highlighted: boolean
+
+  @ManyToOne(() => Asset, { nullable: true })
+  @JoinColumn()
+  mainAsset?: Asset
 
   @ManyToMany(() => Asset, asset => asset.products, { nullable: true })
   @JoinTable()

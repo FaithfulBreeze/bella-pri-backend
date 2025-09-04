@@ -31,6 +31,10 @@ export class CreateProductDto {
   @IsOptional()
   highlighted: boolean;
 
+  @IsInt()
+  @IsOptional()
+  mainAssetId?: number;
+
   @IsArray()
   @ArrayUnique()
   @IsInt({ each: true })
