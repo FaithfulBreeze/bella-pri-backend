@@ -120,7 +120,7 @@ export class ProductsService {
   async findOne(id: number) {
     const product = await this.productRepository.findOne({
       where: { id },
-      relations: { assets: true, categories: true },
+      relations: { assets: true, mainAsset: true, categories: true },
     });
     if (!product) throw new NotFoundException('Produto não encontrado');
     return product;
@@ -163,7 +163,7 @@ export class ProductsService {
 
     const product = await this.productRepository.findOne({
       where: { id },
-      relations: { assets: true, categories: true },
+      relations: { assets: true, mainAsset: true, categories: true },
     });
     if (!product) throw new NotFoundException('Produto não encontrado');
 
