@@ -7,6 +7,7 @@ import { AssetsModule } from './assets/assets.module';
 import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { TiktokVideosModule } from './tiktok-videos/tiktok-videos.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ConfigModule } from '@nestjs/config';
     AssetsModule,
     CategoriesModule,
     AuthModule,
+    TiktokVideosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
