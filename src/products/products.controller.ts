@@ -14,7 +14,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { sanitizeCategoryIds } from 'src/common/utils/sanitizeCategoryIds';
+import { sanitizeCategoryIds } from '../common/utils/sanitizeCategoryIds';
 
 @Controller('products')
 export class ProductsController {
