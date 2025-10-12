@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Asset } from '../../assets/entities/asset.entity';
 import { Category } from '../../categories/entities/category.entity';
 
@@ -20,17 +28,19 @@ export class Product {
   link?: string;
 
   @Column({ default: false })
-  highlighted: boolean
+  highlighted: boolean;
 
   @ManyToOne(() => Asset, { nullable: true })
   @JoinColumn()
-  mainAsset?: Asset
+  mainAsset?: Asset;
 
-  @ManyToMany(() => Asset, asset => asset.products, { nullable: true })
+  @ManyToMany(() => Asset, (asset) => asset.products, { nullable: true })
   @JoinTable()
   assets: Asset[];
 
-  @ManyToMany(() => Category, category => category.products, { nullable: true })
+  @ManyToMany(() => Category, (category) => category.products, {
+    nullable: true,
+  })
   @JoinTable()
-  categories: Category[]
+  categories: Category[];
 }

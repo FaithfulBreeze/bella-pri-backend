@@ -44,7 +44,6 @@ export class CategoriesController {
     return this.categoriesService.findOne(+id);
   }
 
-
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   update(
