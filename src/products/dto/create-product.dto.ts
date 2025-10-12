@@ -1,13 +1,13 @@
-import { 
-  IsArray, 
-  IsInt, 
-  IsNotEmpty, 
-  IsNumber, 
-  IsOptional, 
-  IsPositive, 
-  IsString, 
-  ArrayUnique, 
-  IsBoolean
+import {
+  IsArray,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  ArrayUnique,
+  IsBoolean,
 } from 'class-validator';
 
 export class CreateProductDto {

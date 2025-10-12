@@ -1,4 +1,6 @@
-export function sanitizeCategoryIds(input?: string | number[]): number[] | undefined {
+export function sanitizeCategoryIds(
+  input?: string | number[],
+): number[] | undefined {
   if (!input) return undefined;
 
   if (typeof input === 'string') {
