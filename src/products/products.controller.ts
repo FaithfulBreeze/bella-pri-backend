@@ -14,6 +14,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { sanitizeCategoryIds } from 'src/common/utils/sanitizeCategoryIds';
 
 @Controller('products')
 export class ProductsController {
@@ -29,10 +30,15 @@ export class ProductsController {
   findAll(
     @Query('take') take: number = 20,
     @Query('skip') skip: number = 0,
-    @Query('categoryIds') categoryIds?: number[],
+    @Query('categoryIds') categoryIds?: string,
     @Query('orderByPrice') orderByPrice: 'ASC' | 'DESC' = 'ASC',
   ) {
-    return this.productsService.findAll(+take, +skip, categoryIds, orderByPrice);
+    return this.productsService.findAll(
+      +take,
+      +skip,
+      sanitizeCategoryIds(categoryIds),
+      orderByPrice,
+    );
   }
 
   @Get('/highlighted')
@@ -48,10 +54,16 @@ export class ProductsController {
     @Param('name') name: string = '',
     @Query('take') take: number = 20,
     @Query('skip') skip: number = 0,
-    @Query('categoryIds') categoryIds?: number[],
+    @Query('categoryIds') categoryIds?: string,
     @Query('orderByPrice') orderByPrice: 'ASC' | 'DESC' = 'ASC',
   ) {
-    return this.productsService.findOneByName(name, +take, +skip, categoryIds, orderByPrice);
+    return this.productsService.findOneByName(
+      name,
+      +take,
+      +skip,
+      sanitizeCategoryIds(categoryIds),
+      orderByPrice,
+    );
   }
 
   @Get(':id')
