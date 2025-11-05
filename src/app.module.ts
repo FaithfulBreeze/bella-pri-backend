@@ -8,6 +8,8 @@ import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TiktokVideosModule } from './tiktok-videos/tiktok-videos.module';
+import { PaymentsModule } from './payments/payments.module';
+import { MailerService } from './mailer/mailer.service';
 
 @Module({
   imports: [
@@ -24,8 +26,9 @@ import { TiktokVideosModule } from './tiktok-videos/tiktok-videos.module';
     CategoriesModule,
     AuthModule,
     TiktokVideosModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MailerService],
 })
 export class AppModule {}
