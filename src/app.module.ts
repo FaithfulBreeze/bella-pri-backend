@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TiktokVideosModule } from './tiktok-videos/tiktok-videos.module';
 import { PaymentsModule } from './payments/payments.module';
 import { MailerService } from './mailer/mailer.service';
+import { PurchasesModule } from './purchases/purchases.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MailerService } from './mailer/mailer.service';
     AuthModule,
     TiktokVideosModule,
     PaymentsModule,
+    PurchasesModule,
   ],
   controllers: [AppController],
   providers: [AppService, MailerService],

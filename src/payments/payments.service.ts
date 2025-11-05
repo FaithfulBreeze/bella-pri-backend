@@ -9,7 +9,9 @@ import { ConfigService } from '@nestjs/config';
 import { MailerService } from '../mailer/mailer.service';
 import * as crypto from 'crypto';
 import { WebhookDto } from './dto/webhook.dto';
-import { type Request } from 'express';
+import { type Response, type Request } from 'express';
+import { PurchasesService } from '../purchases/purchases.service';
+import { PurchaseStatus } from '../purchases/entities/purchase.entity';
 
 @Injectable()
 export class PaymentsService {
@@ -18,6 +20,7 @@ export class PaymentsService {
   constructor(
     private readonly configService: ConfigService,
     private readonly mailerService: MailerService,
+    private readonly purchasesService: PurchasesService,
   ) {
     this.webhookSecret = configService.getOrThrow(
       'MP_WEBHOOK_SIGNATURE_SECRET',
@@ -27,19 +30,25 @@ export class PaymentsService {
     });
   }
 
-  async webhook(body: WebhookDto, req: Request) {
+  async webhook(body: WebhookDto, req: Request, res: Response) {
     this.validateWebhook(req);
     try {
-      const payment = await new Payment(this.mp).get({ id: body.id });
+      const payment = await this.getPayment(body.id);
+
       if (payment.status !== 'approved')
         throw new BadRequestException('Payment not approved');
+
+      this.purchasesService.update(body.id, PurchaseStatus.PURCHASED);
+
       const payer = payment.payer;
 
       await this.mailerService.sendPurchaseEmail({
         addressee: payer?.email || '',
       });
+
+      res.json({ success: true });
     } catch (error) {
-      throw new BadRequestException(error);
+      res.status(error.status).json({ message: error.message });
     }
   }
 
@@ -64,7 +73,30 @@ export class PaymentsService {
       },
     });
 
+    await this.purchasesService.create({
+      paymentId: preference.id!,
+      totalCost: items.reduce(
+        (acc, item) => acc + item.unit_price * item.quantity,
+        0,
+      ),
+      city: createPaymentPreferenceDto.payer.address.city,
+      federalUnit: createPaymentPreferenceDto.payer.address.federal_unit,
+      neighborhood: createPaymentPreferenceDto.payer.address.neighborhood,
+      streetName: createPaymentPreferenceDto.payer.address.street_name,
+      streetNumber: createPaymentPreferenceDto.payer.address.street_number,
+      zipCode: createPaymentPreferenceDto.payer.address.zip_code,
+      payerEmail: createPaymentPreferenceDto.payer.email,
+      payerPhoneNumber: createPaymentPreferenceDto.payer.phone.number,
+      payerPhoneAreaCode: createPaymentPreferenceDto.payer.phone.area_code,
+      payerName: createPaymentPreferenceDto.payer.name,
+      status: PurchaseStatus.PENDING_PAYMENT,
+    });
+
     return preference;
+  }
+
+  async getPayment(paymentId: string) {
+    return await new Payment(this.mp).get({ id: paymentId });
   }
 
   private validateWebhook(req) {
