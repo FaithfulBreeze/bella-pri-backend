@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Asset } from '../../assets/entities/asset.entity';
 import { Category } from '../../categories/entities/category.entity';
+import { Purchase } from '../../purchases/entities/purchase.entity';
 
 @Entity()
 export class Product {
@@ -37,6 +38,12 @@ export class Product {
   @ManyToMany(() => Asset, (asset) => asset.products, { nullable: true })
   @JoinTable()
   assets: Asset[];
+
+  @ManyToMany(() => Purchase, (purchase) => purchase.products, {
+    nullable: true,
+  })
+  @JoinTable()
+  purchases: Purchase[];
 
   @ManyToMany(() => Category, (category) => category.products, {
     nullable: true,
