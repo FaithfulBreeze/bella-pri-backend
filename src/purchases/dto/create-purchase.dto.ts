@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsString } from 'class-validator';
 import { PurchaseStatus } from '../entities/purchase.entity';
 
 export class CreatePurchaseDto {
@@ -40,4 +40,13 @@ export class CreatePurchaseDto {
 
   @IsString()
   payerName: string;
+
+  @IsArray()
+  items: {
+    id: string;
+    title: string;
+    quantity: number;
+    currency_id: string;
+    unit_price: number;
+  }[];
 }

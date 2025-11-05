@@ -90,6 +90,7 @@ export class PaymentsService {
       payerPhoneAreaCode: createPaymentPreferenceDto.payer.phone.area_code,
       payerName: createPaymentPreferenceDto.payer.name,
       status: PurchaseStatus.PENDING_PAYMENT,
+      items,
     });
 
     return preference;
