@@ -13,6 +13,11 @@ import { CategoriesService } from '../categories/categories.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Purchase, Product, Asset, Category])],
   controllers: [PurchasesController],
-  providers: [PurchasesService, ProductsService, AssetsService, CategoriesService],
+  providers: [
+    PurchasesService,
+    ProductsService,
+    AssetsService,
+    CategoriesService,
+  ],
 })
 export class PurchasesModule {}

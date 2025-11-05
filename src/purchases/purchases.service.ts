@@ -60,8 +60,6 @@ export class PurchasesService {
 
     if (!foundPurchase) throw new NotFoundException('Compra não encontrada');
 
-    foundPurchase.status = status;
-
-    await this.purchasesRepository.save(foundPurchase);
+    await this.purchasesRepository.update(foundPurchase.id, { status });
   }
 }
