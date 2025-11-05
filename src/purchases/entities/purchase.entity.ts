@@ -8,10 +8,10 @@ import {
 } from 'typeorm';
 
 export enum PurchaseStatus {
-  PENDING_PAYMENT,
-  PURCHASED,
-  SHIPPED,
-  DELIVERED,
+  PENDING_PAYMENT = 'PENDING_PAYMENT',
+  PURCHASED = 'PURCHASED',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
 }
 
 @Entity()
